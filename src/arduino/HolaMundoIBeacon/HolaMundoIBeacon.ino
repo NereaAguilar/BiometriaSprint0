@@ -40,7 +40,6 @@ namespace Globales {
 #include "Publicador.h"
 #include "Medidor.h"
 
-
 // --------------------------------------------------------------
 // --------------------------------------------------------------
 namespace Globales {
