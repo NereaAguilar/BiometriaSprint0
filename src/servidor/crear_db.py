@@ -1,3 +1,7 @@
+#---------------------------------
+# Nerea Aguilar Fores
+#---------------------------------
+
 import sqlite3
 
 #Abrir/crear base de datos
