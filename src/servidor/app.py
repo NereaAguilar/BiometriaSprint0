@@ -14,18 +14,18 @@ logica.init_db()
 
 # Modelo de entrada
 class Medida(BaseModel):
-    contador: int
     tipo: int
     medicion: float
 
 # Modelo de salida
 class MedidaOut(Medida):
+    id: int
     fecha: str
 
 # Agregar medida
 @app.post("/medida", response_model=MedidaOut)
 def nueva_medida(data: Medida):
-    return logica.anyadirMed(data.contador, data.tipo, data.medicion)
+    return logica.anyadirMed(data.tipo, data.medicion)
 
 # Obtener ultima medida
 @app.get("/medida/ultima", response_model=MedidaOut)
