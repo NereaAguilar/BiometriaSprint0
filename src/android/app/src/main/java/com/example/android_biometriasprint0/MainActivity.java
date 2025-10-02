@@ -56,7 +56,38 @@ public class MainActivity extends AppCompatActivity {
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanResult() ");
+                //----------------------------------------------------------------------------------
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                String nombreDispositivo = resultado.getDevice().getName();
 
+                if (nombreDispositivo != null && nombreDispositivo.equals("Nerea")) {
+
+                    // Sacar la trama beacon
+                    byte[] scanRecord = resultado.getScanRecord().getBytes();
+                    TramaIBeacon trama = new TramaIBeacon(scanRecord);
+
+                    Medidas medida = Utilidades.interpretarTrama(trama);
+
+                    boolean enviada = TransmitirMedidas.enviarMedida(medida);
+
+                    //Prueba
+                    if (enviada) {
+                        Log.d("API", "Medida enviada: tipo="
+                                + medida.getTipo() + " valor=" + medida.getMedicion());
+                    } else {
+                        Log.e("API", "Error al enviar la medida");
+                    }
+                }
+                //----------------------------------------------------------------------------------
                 mostrarInformacionDispositivoBTLE( resultado );
             }
 
