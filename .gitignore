@@ -1,17 +1,18 @@
-# Ignorar entorno virtual
+# Entorno virtual (si lo vuelves a crear en el futuro)
 .venv/
 venv/
 env/
 
-# Archivos compilados de Python
+# Cache de Python
 __pycache__/
 *.pyc
 
-# Bases de datos locales
+# Archivos de base de datos locales
 *.db
 
-# Archivos de configuración local
+# Configuración local
 .env
 
-# Archivos de VSCode/IDE
+# Configuración de IDEs
 .vscode/
+.idea/

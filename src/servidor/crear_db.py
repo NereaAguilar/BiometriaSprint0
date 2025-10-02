@@ -1,3 +1,7 @@
+#---------------------------------
+# Nerea Aguilar Fores
+#---------------------------------
+
 import sqlite3
 
 #Abrir/crear base de datos
@@ -9,7 +13,7 @@ print("Conexión OK")
 #Crear tabla(si no existe)
 cur.execute("""
 CREATE TABLE IF NOT EXISTS datosMedidas(
-            contador INTEGER PRIMARY KEY AUTOINCREMENT,
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
             tipo INTEGER NOT NULL,
             medicion REAL NOT NULL,
             fecha TEXT DEFAULT (datetime('now','localtime'))
