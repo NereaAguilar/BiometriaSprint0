@@ -13,7 +13,7 @@ def init_db():
     c = conn.cursor()
     c.execute("""
         CREATE TABLE IF NOT EXISTS datosMedidas (
-            contador INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY,
             tipo INTEGER,
             medicion REAL,
             fecha TEXT
