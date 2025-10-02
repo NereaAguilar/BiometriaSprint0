@@ -199,6 +199,22 @@ public class MainActivity extends AppCompatActivity {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
 
+                //----------------------------------------------------------------------------------
+                byte[] scanRecord = resultado.getScanRecord().getBytes();
+                TramaIBeacon trama = new TramaIBeacon(scanRecord);
+
+                Medidas medida = Utilidades.interpretarTrama(trama);
+                boolean enviada = TransmitirMedidas.enviarMedida(medida);
+
+                //Prueba
+                if (enviada) {
+                    Log.d("API", "Medida enviada: tipo="
+                            + medida.getTipo() + " valor=" + medida.getMedicion());
+                } else {
+                    Log.e("API", "Error al enviar la medida");
+                }
+                //----------------------------------------------------------------------------------
+
                 mostrarInformacionDispositivoBTLE( resultado );
             }
 
