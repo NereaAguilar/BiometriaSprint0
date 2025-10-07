@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 
 // ------------------------------------------------------------------
+//   Descripción: Actividad principal de la aplicación Android. Controla el
+//   escaneo BLE, interpreta las tramas iBeacon recibidas y envía las medidas al servidor.
 // ------------------------------------------------------------------
 
 public class MainActivity extends AppCompatActivity {
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------
     private static final String ETIQUETA_LOG = ">>>>";
 
+    // Código de petición de permisos de Bluetooth y ubicación
     private static final int CODIGO_PETICION_PERMISOS = 11223344;
 
     // --------------------------------------------------------------
@@ -43,8 +46,11 @@ public class MainActivity extends AppCompatActivity {
 
     private ScanCallback callbackDelEscaneo = null;
 
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // ------------------------------------------------------------
+    // Metodo: buscarTodosLosDispositivosBTLE()
+    // Inicia el escaneo general de todos los dispositivos BLE detectables
+    // y muestra información básica de cada uno.
+    // ------------------------------------------------------------
     private void buscarTodosLosDispositivosBTLE() {
 
         detenerBusquedaDispositivosBTLE();
@@ -69,10 +75,13 @@ public class MainActivity extends AppCompatActivity {
                     // for ActivityCompat#requestPermissions for more details.
                     return;
                 }
+
+                // Extraer datos crudos de la trama
                 byte[] scanRecord = resultado.getScanRecord().getBytes();
                 TramaIBeacon trama = new TramaIBeacon(scanRecord);
                 String uuid = Utilidades.bytesToString(trama.getUUID());
 
+                // Procesar solo las tramas con el UUID del proyecto
                 if (uuid.equals("EPSG-GTI-PROY-3A")) {
                     Medidas medida = Utilidades.interpretarTrama(trama);
                     new Thread(() -> {
@@ -106,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): empezamos a escanear ");
 
+        // Verificar permisos de escaneo antes de iniciar
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -121,7 +131,14 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    //
+
+    // ------------------------------------------------------------
+    // Metodo: mostrarInformacionDispositivoBTLE()
+    // Muestra en Logcat toda la información del dispositivo BLE detectado.
+    // Incluye UUID, major, minor, potencia de transmisión y dirección.
+    // ------------------------------------------------------------
+
     private void mostrarInformacionDispositivoBTLE( ScanResult resultado ) {
 
         BluetoothDevice bluetoothDevice = resultado.getDevice();
@@ -178,10 +195,12 @@ public class MainActivity extends AppCompatActivity {
 
     } // ()
 
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
-// --------------------------------------------------------------
+
+    // ------------------------------------------------------------
+    // Metodo: buscarEsteDispositivoBTLE()
+    // Escanea solo el beacon con nombre y UUID del proyecto.
+    // Envía las medidas al servidor si el dispositivo coincide.
+    // ------------------------------------------------------------
     private void buscarEsteDispositivoBTLE() {
 
         detenerBusquedaDispositivosBTLE();
@@ -260,6 +279,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     // --------------------------------------------------------------
+    // Detiene el escaneo actual de dispositivos BLE
     // --------------------------------------------------------------
     private void detenerBusquedaDispositivosBTLE() {
 
@@ -283,6 +303,7 @@ public class MainActivity extends AppCompatActivity {
     } // ()
 
     // --------------------------------------------------------------
+    // Métodos vinculados a los botones del a interfaz
     // --------------------------------------------------------------
     public void botonBuscarDispositivosBTLEPulsado( View v ) {
         Log.d(ETIQUETA_LOG, " boton buscar dispositivos BTLE Pulsado" );
@@ -307,8 +328,9 @@ public class MainActivity extends AppCompatActivity {
         this.detenerBusquedaDispositivosBTLE();
     } // ()
 
-    // --------------------------------------------------------------
-    // --------------------------------------------------------------
+    // ------------------------------------------------------------
+    // Inicializa Bluetooth y solicita permisos necesarios
+    // ------------------------------------------------------------
     private void inicializarBlueTooth() {
         Log.d(ETIQUETA_LOG, " inicializarBlueTooth(): obtenemos adaptador BT ");
 
