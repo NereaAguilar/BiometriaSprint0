@@ -4,6 +4,8 @@
 // Contiene la lógica de negocio. Conexión y operaciones con la BBDD
 //-------------------------------------------------------------
 
+date_default_timezone_set('Europe/Madrid');
+
 // Inicializa la base de datos y crea la tabla si no existe
 function init_db() {
     $db = new SQLite3('datos.db');
@@ -11,7 +13,7 @@ function init_db() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         tipo INTEGER,
         medicion REAL,
-        fecha TEXT DEFAULT CURRENT_TIMESTAMP
+        fecha TEXT
     )');
     return $db;
 }
@@ -19,9 +21,10 @@ function init_db() {
 // Añade una nueva medida a la base de datos
 function anyadirMed($tipo, $medicion) {
     $db = init_db();
-    $stmt = $db->prepare('INSERT INTO datosMedidas (tipo, medicion) VALUES (:tipo, :medicion)');
+    $stmt = $db->prepare('INSERT INTO datosMedidas (tipo, medicion, fecha) VALUES (:tipo, :medicion, :fecha)');
     $stmt->bindValue(':tipo', $tipo, SQLITE3_INTEGER);
     $stmt->bindValue(':medicion', $medicion, SQLITE3_FLOAT);
+    $stmt->bindValue(':fecha', date('Y-m-d H:i:s'), SQLITE3_TEXT);
     $stmt->execute();
 
     // Corfrima el guardado
