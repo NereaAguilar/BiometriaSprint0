@@ -1,12 +1,18 @@
+//-------------------------------------------------------------
+// Nerea Aguilar Forés
+// Lógica de la web: muestra la última medida recibida
+//-------------------------------------------------------------
 const API = "https://nagufor.upv.edu.es/app.php";
 
-//Obtenemos la última medida para mostrarla en la web
+// Realiza una petición GET a la API para obtener la última medida
+// si es válida, se muestra en la web
 async function obtenerUltima() {
     const div = document.getElementById("resultado");
 
     try {
         const res = await fetch(API + "/medida/ultima");
 
+        // Si la API no responde correctamente
         if (!res.ok) {
             div.innerHTML = "No hay medidas en la base de datos.";
             return;
@@ -23,6 +29,7 @@ async function obtenerUltima() {
             tipoMedida = data.tipo;
         }
 
+        // Mostrar
         div.innerHTML = `
             <b>ID:</b> ${data.id}<br>
             <b>Tipo:</b> ${tipoMedida}<br>
