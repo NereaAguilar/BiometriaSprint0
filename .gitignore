@@ -16,3 +16,8 @@ __pycache__/
 # Configuración de IDEs
 .vscode/
 .idea/
+
+
+node_modules/
+package-lock.json
+
