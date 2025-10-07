@@ -19,6 +19,8 @@ function init_db() {
 }
 
 // Añade una nueva medida a la base de datos
+// Parámetros: tipo (int), medicion (float)
+// Devuelve: array con los datos insertados
 function anyadirMed($tipo, $medicion) {
     $db = init_db();
     $stmt = $db->prepare('INSERT INTO datosMedidas (tipo, medicion, fecha) VALUES (:tipo, :medicion, :fecha)');
@@ -37,6 +39,7 @@ function anyadirMed($tipo, $medicion) {
 }
 
 // Consulta la última medida registrada
+// Devuelve: array con la última medida o null si no hay datos
 function ultimaMed() {
     $db = init_db();
     $result = $db->query('SELECT * FROM datosMedidas ORDER BY id DESC LIMIT 1');

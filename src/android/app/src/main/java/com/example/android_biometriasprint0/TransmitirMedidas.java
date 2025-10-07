@@ -1,7 +1,10 @@
 package com.example.android_biometriasprint0;
 
 //------------------------------------------------------------
-//     Nerea Aguilar Forés
+//   Autor: Nerea Aguilar Forés
+//   Descripción: Clase encargada de enviar las mediciones desde
+//   la app Android hacia la API REST del servidor
+//   Realiza peticiones HTTP POST con los datos en formato JSON
 //------------------------------------------------------------
 
 import android.util.Log;
@@ -14,12 +17,21 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+// -----------------------------------------------------------------------------------
 // Clase encargada de enviar las mediciones a la API REST
+// -----------------------------------------------------------------------------------
 public class TransmitirMedidas {
     //private static final String API_URL = "http://10.0.2.2:8000/medida";
+
+    //URL de la API REST, servidor en Plesk
     private static final String API_URL = "https://nagufor.upv.edu.es/app.php/medida";
 
-    // Envía una medida al servidor con POST
+    // -----------------------------------------------------------------------------------
+    // Metodo: enviarMedida()
+    // Envía una medida al servidor mediante POST en formato JSON
+    // Parámetro: Medidas medida (tipo (int), medición (double))
+    // Devuelve: true si la API responde con código 200, false en caso de error
+    // -----------------------------------------------------------------------------------
     public static boolean enviarMedida(Medidas medida) {
         HttpURLConnection conn = null;
         try {

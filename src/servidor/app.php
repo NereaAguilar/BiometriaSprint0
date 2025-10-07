@@ -12,6 +12,8 @@ $path = $_SERVER['REQUEST_URI'];
 
 
 // POST → Inserta una nueva medida
+// Espera: { "tipo": int, "medicion": float }
+// Devuelve: JSON con confirmación o error
 if ($method === 'POST' && strpos($path, '/medida') !== false) {
     $input = json_decode(file_get_contents('php://input'), true);
 
@@ -28,6 +30,7 @@ if ($method === 'POST' && strpos($path, '/medida') !== false) {
 }
 
 // GET → Devuelve la última medida guardada
+// Devuelve: JSON con { id, tipo, medicion, fecha } o error
 elseif ($method === 'GET' && strpos($path, '/medida/ultima') !== false) {
     $ultima = ultimaMed();
     if ($ultima) {

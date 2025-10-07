@@ -141,7 +141,11 @@ public class Utilidades {
         return sb.toString();
     } // ()
 
-    // Función para sacar los valores de la trama
+    // -----------------------------------------------------------------------------------
+    // Metodo: interpretarTrama()
+    // Procesa una trama iBeacon recibida y extrae: tipo, valor y contador
+    // Evita datos dupliacdos comprobando con el contador si es repetido
+    // -----------------------------------------------------------------------------------
     public static Medidas interpretarTrama(TramaIBeacon trama){
         int major = Utilidades.bytesToInt(trama.getMajor());
         int minor = Utilidades.bytesToInt(trama.getMinor());
