@@ -56,8 +56,12 @@ y validan la inserción y consulta de medidas desde la API REST.
 ```bash
 npm install   # Instalar dependencias
 npm test      # Ejecutar suite de pruebas
-Resultado esperado:
+```
+
+### Resultado esperado:
+```bash
 API de Medidas
   ✓ POST /medida inserta una medida válida
   ✓ GET /medida/ultima devuelve una medida
 2 passing (500ms)
+```
