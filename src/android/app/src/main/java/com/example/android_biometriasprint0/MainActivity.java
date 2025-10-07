@@ -15,6 +15,8 @@ import android.os.Bundle;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -56,7 +58,34 @@ public class MainActivity extends AppCompatActivity {
             public void onScanResult( int callbackType, ScanResult resultado ) {
                 super.onScanResult(callbackType, resultado);
                 Log.d(ETIQUETA_LOG, " buscarTodosLosDispositivosBTL(): onScanResult() ");
+                //----------------------------------------------------------------------------------
+                if (ActivityCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                byte[] scanRecord = resultado.getScanRecord().getBytes();
+                TramaIBeacon trama = new TramaIBeacon(scanRecord);
+                String uuid = Utilidades.bytesToString(trama.getUUID());
 
+                if (uuid.equals("EPSG-GTI-PROY-3A")) {
+                    Medidas medida = Utilidades.interpretarTrama(trama);
+                    new Thread(() -> {
+                        boolean enviada = TransmitirMedidas.enviarMedida(medida);
+                        if (enviada) {
+                            Log.d("API", "Medida enviada: tipo=" + medida.getTipo() + " valor=" + medida.getMedicion());
+                        } else {
+                            Log.e("API", "Error al enviar la medida");
+                        }
+                    }).start();
+                }
+
+                //----------------------------------------------------------------------------------
                 mostrarInformacionDispositivoBTLE( resultado );
             }
 
@@ -151,67 +180,84 @@ public class MainActivity extends AppCompatActivity {
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
-    private void buscarEsteDispositivoBTLE(final String dispositivoBuscado ) {
+    // --------------------------------------------------------------
+// --------------------------------------------------------------
+    private void buscarEsteDispositivoBTLE() {
 
         detenerBusquedaDispositivosBTLE();
 
-        Log.d(ETIQUETA_LOG, " buscarEsteDispositivoBTLE(): empieza ");
-
-        Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): instalamos scan callback ");
-
-
-        // super.onScanResult(ScanSettings.SCAN_MODE_LOW_LATENCY, result); para ahorro de energía
+        Log.d(ETIQUETA_LOG, "buscarEsteDispositivoBTLE(): empieza");
+        Log.d(ETIQUETA_LOG, "buscarEsteDispositivoBTLE(): buscando dispositivo con nombre: Nerea");
 
         this.callbackDelEscaneo = new ScanCallback() {
             @Override
-            public void onScanResult( int callbackType, ScanResult resultado ) {
+            public void onScanResult(int callbackType, ScanResult resultado) {
                 super.onScanResult(callbackType, resultado);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanResult() ");
 
-                mostrarInformacionDispositivoBTLE( resultado );
+                if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                        Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+
+                BluetoothDevice device = resultado.getDevice();
+                String nombre = (device != null) ? device.getName() : null;
+
+                // Solo seguimos si el beacon tiene nombre "Nerea"
+                if (nombre != null && nombre.equals("Nerea")) {
+
+                    // Mostrar información completa en Logcat
+                    mostrarInformacionDispositivoBTLE(resultado);
+
+                    // Extraer la trama y procesar el UUID
+                    byte[] scanRecord = resultado.getScanRecord().getBytes();
+                    TramaIBeacon trama = new TramaIBeacon(scanRecord);
+                    String uuid = Utilidades.bytesToString(trama.getUUID());
+
+                    // Procesar solo si el UUID coincide con el nuestro
+                    if (uuid.equals("EPSG-GTI-PROY-3A")) {
+                        Medidas medida = Utilidades.interpretarTrama(trama);
+
+                        new Thread(() -> {
+                            boolean enviada = TransmitirMedidas.enviarMedida(medida);
+                            if (enviada) {
+                                Log.d("API", "Medida enviada: tipo=" + medida.getTipo()
+                                        + " valor=" + medida.getMedicion());
+                            } else {
+                                Log.e("API", "Error al enviar la medida");
+                            }
+                        }).start();
+                    }
+                }
             }
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
                 super.onBatchScanResults(results);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onBatchScanResults() ");
-
+                Log.d(ETIQUETA_LOG, "buscarEsteDispositivoBTLE(): onBatchScanResults()");
             }
 
             @Override
             public void onScanFailed(int errorCode) {
                 super.onScanFailed(errorCode);
-                Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): onScanFailed() ");
-
+                Log.e(ETIQUETA_LOG, "buscarEsteDispositivoBTLE(): onScanFailed() código=" + errorCode);
             }
         };
 
-        //Filtrar por nombre
-        ScanFilter sf = new ScanFilter.Builder().setDeviceName( dispositivoBuscado ).build();
-
-        List<ScanFilter> filtros = new ArrayList<>();
-        filtros.add(sf);
-
+        // Configurar el escaneo
         ScanSettings settings = new ScanSettings.Builder()
                 .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
                 .build();
 
-        Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado );
-        //Log.d(ETIQUETA_LOG, "  buscarEsteDispositivoBTLE(): empezamos a escanear buscando: " + dispositivoBuscado
-        //      + " -> " + Utilidades.stringToUUID( dispositivoBuscado ) );
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
-        this.elEscanner.startScan(filtros, settings, this.callbackDelEscaneo);
-    } // ()
+
+        this.elEscanner.startScan(null, settings, this.callbackDelEscaneo);
+        Log.d(ETIQUETA_LOG, "buscarEsteDispositivoBTLE(): escaneando...");
+    }
+
+
 
     // --------------------------------------------------------------
     // --------------------------------------------------------------
@@ -250,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
         //this.buscarEsteDispositivoBTLE( Utilidades.stringToUUID( "EPSG-GTI-PROY-3A" ) );
 
         //this.buscarEsteDispositivoBTLE( "EPSG-GTI-PROY-3A" );
-        this.buscarEsteDispositivoBTLE( "Nerea" );
+        this.buscarEsteDispositivoBTLE();
 
     } // ()
 

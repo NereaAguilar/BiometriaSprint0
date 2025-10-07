@@ -137,6 +137,17 @@ public class Utilidades {
         }
         return sb.toString();
     } // ()
+
+    // Función para sacar los valores de la trama
+    public static Medidas interpretarTrama(TramaIBeacon trama){
+        int major = Utilidades.bytesToInt(trama.getMajor());
+        int minor = Utilidades.bytesToInt(trama.getMinor());
+
+        int tipo = (major >> 8) & 0xFF;
+        double valor = minor / 10.0;
+
+        return new Medidas(tipo, valor);
+    }
 } // class
 // -----------------------------------------------------------------------------------
 // -----------------------------------------------------------------------------------

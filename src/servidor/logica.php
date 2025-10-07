@@ -1,0 +1,43 @@
+<?php
+//-------------------------------------------------------------
+// Nerea
+// Contiene la lógica de negocio. Conexión y operaciones con la BBDD
+//-------------------------------------------------------------
+
+// Inicializa la base de datos y crea la tabla si no existe
+function init_db() {
+    $db = new SQLite3('datos.db');
+    $db->exec('CREATE TABLE IF NOT EXISTS datosMedidas (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        tipo INTEGER,
+        medicion REAL,
+        fecha TEXT DEFAULT CURRENT_TIMESTAMP
+    )');
+    return $db;
+}
+
+// Añade una nueva medida a la base de datos
+function anyadirMed($tipo, $medicion) {
+    $db = init_db();
+    $stmt = $db->prepare('INSERT INTO datosMedidas (tipo, medicion) VALUES (:tipo, :medicion)');
+    $stmt->bindValue(':tipo', $tipo, SQLITE3_INTEGER);
+    $stmt->bindValue(':medicion', $medicion, SQLITE3_FLOAT);
+    $stmt->execute();
+
+    // Corfrima el guardado
+    return [
+        "id" => $db->lastInsertRowID(),
+        "tipo" => $tipo,
+        "medicion" => $medicion,
+        "fecha" => date('Y-m-d H:i:s')
+    ];
+}
+
+// Consulta la última medida registrada
+function ultimaMed() {
+    $db = init_db();
+    $result = $db->query('SELECT * FROM datosMedidas ORDER BY id DESC LIMIT 1');
+    $row = $result->fetchArray(SQLITE3_ASSOC);
+    return $row ? $row : null;
+}
+?>
