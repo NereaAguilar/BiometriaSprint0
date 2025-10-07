@@ -1,14 +1,17 @@
 package com.example.android_biometriasprint0;
 
-
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 // -----------------------------------------------------------------------------------
 // @author: Jordi Bataller i Mascarell
 // -----------------------------------------------------------------------------------
 public class Utilidades {
+
+    private static Map<Integer, Double> contadoresUsados = new HashMap<>();
 
     // -------------------------------------------------------------------------------
     // -------------------------------------------------------------------------------
@@ -145,8 +148,23 @@ public class Utilidades {
 
         int tipo = (major >> 8) & 0xFF;
         double valor = minor / 10.0;
+        int contador = major & 0xFF;
 
-        return new Medidas(tipo, valor);
+        if (!contadoresUsados.containsKey(contador)) {
+            // Si el contador no está de añade y se devulve la medida
+            contadoresUsados.put(contador, valor);
+            return new Medidas(tipo, valor);
+        } else {
+            double valorPrevio = contadoresUsados.get(contador);
+            if (valorPrevio != valor) {
+                // Si es mismo contador pero valor distinto, se actualiza y devuelve
+                contadoresUsados.put(contador, valor);
+                return new Medidas(tipo, valor);
+            } else {
+                // Mismo contador y mismo valor se ignora
+                return null;
+            }
+        }
     }
 } // class
 // -----------------------------------------------------------------------------------

@@ -63,6 +63,8 @@ void inicializarPlaquita () {
 // --------------------------------------------------------------
 void setup() {
 
+  randomSeed(analogRead(A0));   // Inicializa el generador aleatorio
+
   Globales::elPuerto.esperarDisponible();
 
   // 
