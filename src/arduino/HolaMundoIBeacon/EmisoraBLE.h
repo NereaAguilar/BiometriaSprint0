@@ -1,3 +1,4 @@
+#include "bluefruit.h"
 // -*- mode: c++ -*-
 
 // ----------------------------------------------------------
@@ -118,6 +119,11 @@ public:
 	//
 	//
 	(*this).detenerAnuncio();
+
+	//Evitar que solo mande una vez
+	Bluefruit.Advertising.stop();
+	Bluefruit.Advertising.clearData();
+	Bluefruit.ScanResponse.clearData();
 	
 	//
 	// creo el beacon 
