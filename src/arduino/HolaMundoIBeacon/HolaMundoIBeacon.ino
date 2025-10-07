@@ -139,7 +139,7 @@ void loop () {
   
   elPublicador.publicarCO2( valorCO2,
 							cont,
-							1000 // intervalo de emisión
+							5000 // intervalo de emisión
 							);
   
   // 
@@ -149,7 +149,7 @@ void loop () {
   
   elPublicador.publicarTemperatura( valorTemperatura, 
 									cont,
-									1000 // intervalo de emisión
+									5000 // intervalo de emisión
 									);
 
   // 
@@ -168,12 +168,12 @@ void loop () {
 	'H'
   };
 
-  // elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( &datos[0], 21 );
-  elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( "MolaMolaMolaMolaMolaM", 21 );
+  //elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( &datos[0], 21 );
+  //elPublicador.laEmisora.emitirAnuncioIBeaconLibre ( "MolaMolaMolaMolaMolaM", 21 );
 
-  esperar( 2000 );
+  //esperar( 2000 );
 
-  elPublicador.laEmisora.detenerAnuncio();
+  //elPublicador.laEmisora.detenerAnuncio();
   
   // 
   // 

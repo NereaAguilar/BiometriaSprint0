@@ -1,4 +1,4 @@
-const API = "http://localhost:8000"; 
+const API = "https://nagufor.upv.edu.es/app.php";
 
 async function obtenerUltima() {
     const div = document.getElementById("resultado");
